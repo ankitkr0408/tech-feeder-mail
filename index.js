@@ -9,7 +9,7 @@ import { sendEmail } from './sendEmail.js';
 async function runDailyDigest() {
   const startTime = Date.now();
   console.log('\n' + '═'.repeat(60));
-  console.log('🧠 DAILY TECH RADAR - CTO BRIEF GENERATION');
+  console.log('📰 DAILY TECH RADAR - NEWSLETTER GENERATION');
   console.log('═'.repeat(60) + '\n');
 
   try {
@@ -41,16 +41,16 @@ async function runDailyDigest() {
     // Step 5: AI summarization (with retry + fallback)
     const { summary, itemCount, fallback } = await summarizeItems(topItems, lowSignalItems, productCategories);
 
-    // Step 6: Send CTO brief email
+    // Step 6: Send newsletter email
     await sendEmail(summary, itemCount, fallback);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`\n✨ CTO brief completed in ${duration}s`);
-    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → 5 news + ${totalProducts} products delivered`);
+    console.log(`\n✨ Newsletter completed in ${duration}s`);
+    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → ${itemCount} items delivered`);
     console.log('═'.repeat(60) + '\n');
 
   } catch (error) {
-    console.error('\n❌ Fatal error in CTO brief generation:');
+    console.error('\n❌ Fatal error in newsletter generation:');
     console.error(error);
     console.log('═'.repeat(60) + '\n');
   }

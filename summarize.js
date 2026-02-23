@@ -46,95 +46,75 @@ async function callOpenAI(items, productCategories = {}, retryCount = 0) {
       ).join('\n\n');
   }
 
-  const systemPrompt = `You are a pragmatic CTO and product strategist analyzing SaaS opportunities.
-
-Your expertise:
-- Business model analysis (monetization, moats, defensibility)
-- Founder insights and strategic patterns
-- Technical leverage and cost optimization
-- Market timing and competitive analysis
+  const systemPrompt = `You are a tech newsletter writer creating engaging, story-driven content for founders and developers.
 
 Your style:
-- Sharp, analytical, opinionated
-- Focus on "why now" and "is it defensible"
-- Practical monetization insights
-- Risk assessment
+- Conversational and engaging, like Failory or TLDR newsletters
+- Tell stories, not just facts - explain WHY things matter
+- Use clear sections with descriptive headers
+- Include context and background for each story
+- Be analytical but accessible
+- Focus on practical takeaways
 
 Output requirements:
-- Select EXACTLY 5 items from tech news
-- Analyze ALL product launches with business lens
-- Include one copyable SaaS idea derived from patterns
-- Total response: under 900 words
-- Be brutally honest about defensibility`;
+- Write in newsletter format with clear sections
+- Pick 3-5 most interesting stories from tech news
+- Cover product launches with business context
+- Include links inline naturally
+- Total response: 800-1000 words
+- Make it readable and engaging`;
 
-  const userPrompt = `Analyze these ${items.length} tech items and product launches to create a strategic CTO brief.
+  const userPrompt = `Create an engaging tech newsletter from today's items. Write like you're explaining interesting tech news to a smart friend.
 
 TECH NEWS:
 ${itemsList}${productsSection}
 
-Required output structure:
+Required newsletter structure:
 
-🎯 CTO BRIEF (2-3 lines)
-[Main pattern/trend from today]
+Hey - Welcome to today's edition.
 
-🚀 HIGH-LEVERAGE MOVES (Top 5 from tech news)
-For each:
-### [Title]
-Source: [Source] | Published: [Date]
-CTO Take: [Strategic explanation, max 80 words]
-Why it matters: [Business insight]
-Action: [Concrete step]
+[Write a 2-3 sentence intro about the main theme or pattern you're seeing today]
 
----
+## This Week In Tech
 
-🔥 FUNDED / YC SAAS TO WATCH (1-2 max)
-For each:
-### [Title]
-Source: [Source] | Published: [Date]
+[Pick 3-5 most interesting stories from tech news. For each story:]
 
-Problem: [What problem are they solving?]
-Target Customer: [Who pays?]
-Monetization Model: [Subscription/Usage/Freemium/Hybrid]
-Moat Analysis: [Is it defensible? Why/why not?]
-Founder Insight: [What can we learn from their approach?]
+### [Compelling Title]
 
----
+[Write 2-4 paragraphs telling the story. Include:
+- What happened and why it matters
+- Background context if needed
+- Business implications
+- What you can learn from it
+- Link to source naturally in the text]
 
-🧠 BOOTSTRAPPED / DEVTOOL SAAS SIGNAL (1-2 max)
-For each:
-### [Title]
-Source: [Source]
+## New Products Worth Watching
 
-Why developers care: [Technical value prop]
-How it makes money: [Revenue model]
-Copyable: [Yes/No - explain why]
-Risk level: [Low/Medium/High - explain]
+[Cover interesting product launches. Group by category if needed:]
+
+### [Product Name]
+
+[Write 2-3 paragraphs covering:
+- What problem they're solving
+- Who it's for and how they make money
+- Why it's interesting or defensible (or not)
+- What founders can learn
+- Include link naturally]
+
+## The Takeaway
+
+[End with 2-3 sentences summarizing the key insight or pattern from today's news]
 
 ---
 
-💡 AI / INFRA LEVERAGE MOVE (1 max if available)
-### [Title]
-Strategic impact: [How it improves SaaS building]
-Integration: [How to use it]
-Cost/Retention benefit: [Specific advantage]
-
----
-
-🎁 COPYABLE SAAS IDEA OF THE DAY
-[Derived from patterns across all news]
-
-Problem: [Clear problem statement]
-Target customer: [Specific segment]
-Monetization model: [How it makes money]
-Why now: [Market timing]
-Risk level: [Assessment with reasoning]
-
----
-
-📊 OPTIMIZATION REMINDER
-[One actionable SaaS optimization tip - event tracking, retention, pricing, infra cost, or onboarding]
-
-Keep total under 900 words. Be analytical and honest about defensibility.`;
+Remember:
+- Write conversationally, not like a robot
+- Tell stories, explain context
+- Make it engaging and easy to read
+- Include links naturally in sentences like "Company X just announced..." with the link on "announced"
+- Keep paragraphs short (2-4 sentences max)
+- Use clear section headers
+- Total length: 800-1000 words`;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -173,18 +153,18 @@ export async function summarizeItems(items, lowSignalItems = [], productCategori
   if (!items || items.length === 0) {
     console.log('⚠️  No items to summarize');
     return {
-      summary: 'No high-signal tech news found in the last 24 hours.',
+      summary: 'No interesting tech news found in the last 24 hours.',
       rawItems: [],
       fallback: true
     };
   }
 
-  console.log(`🤖 Analyzing ${items.length} high-signal items with OpenAI...`);
+  console.log(`🤖 Creating newsletter from ${items.length} items with OpenAI...`);
 
   try {
     const { summary, usage } = await callOpenAI(items, productCategories);
     
-    console.log('✅ CTO brief generated successfully');
+    console.log('✅ Newsletter generated successfully');
 
     return {
       summary,
@@ -202,41 +182,47 @@ export async function summarizeItems(items, lowSignalItems = [], productCategori
     
     const top10 = items.slice(0, 10);
     
-    let fallbackSummary = `CTO BRIEF
-AI analysis temporarily unavailable. Here are today's top 10 high-signal items, ranked by strategic relevance.
+    let fallbackSummary = `Hey - Welcome to today's edition.
 
-TOP STRATEGIC ITEMS
+AI analysis is temporarily unavailable, but here are today's top stories ranked by relevance.
+
+## This Week In Tech
 
 ${top10.map((item, idx) => 
-  `${idx + 1}. ${item.title}
-   Source: ${item.source} | Published: ${formatPublishDate(item.pubDate)}
-   Relevance: ${item.relevanceScore}/10
-   ${item.link}
+  `### ${item.title}
+
+Source: ${item.source} | Published: ${formatPublishDate(item.pubDate)}
+Relevance: ${item.relevanceScore}/10
+
+${item.link}
 `).join('\n')}`;
 
     // Add categorized products
     if (productCategories.funded && productCategories.funded.length > 0) {
-      fallbackSummary += `\n\nFUNDED/YC SAAS
+      fallbackSummary += `\n\n## New Products Worth Watching
 
 ${productCategories.funded.map((p, idx) => 
-  `${idx + 1}. ${p.title}
-   Source: ${p.source}
-   ${p.link}
+  `### ${p.title}
+
+Source: ${p.source}
+${p.link}
 `).join('\n')}`;
     }
     
     if (productCategories.devtools && productCategories.devtools.length > 0) {
-      fallbackSummary += `\n\nDEVTOOL SAAS
+      fallbackSummary += `\n\n## Developer Tools
 
 ${productCategories.devtools.map((p, idx) => 
-  `${idx + 1}. ${p.title}
-   Source: ${p.source}
-   ${p.link}
+  `### ${p.title}
+
+Source: ${p.source}
+${p.link}
 `).join('\n')}`;
     }
 
-    fallbackSummary += `\n\nCoverage: ${top10.length} items analyzed from last 24 hours
-Relevance scores: ${top10[0]?.relevanceScore}/10 to ${top10[top10.length - 1]?.relevanceScore}/10`;
+    fallbackSummary += `\n\n---
+
+Coverage: ${top10.length} items from the last 24 hours`;
 
     return {
       summary: fallbackSummary,
