@@ -12,9 +12,9 @@ Production-grade automated intelligence system that delivers strategic tech insi
 - **Professional Email**: HTML and plain text formats, under 700 words, mobile-optimized
 - **Product Launches**: Automatically extracts and highlights top 5 SaaS product launches
 - **Cost-Effective**: Approximately ₹2.75/month (~3,500 tokens per email)
-- 🔄 **Bulletproof Reliability**: Auto-retry + structured fallback (never sends "AI failed" messages)
-- 📧 **Professional Email**: HTML + plain text, under 600 words, mobile-optimized
-- � **Cost-Effective**: ~₹2.25/month (~3,000 tokens per email)
+- **Bulletproof Reliability**: Auto-retry + structured fallback (never sends "AI failed" messages)
+- **Professional Email**: HTML + plain text, under 600 words, mobile-optimized
+- **Cost-Effective**: ~₹2.25/month (~3,000 tokens per email)
 
 ## Quick Start
 
