@@ -10,7 +10,6 @@ Automated daily tech news aggregator that fetches, filters, and summarizes relev
 - 📧 Clean daily email digest
 - ⏰ Automated scheduling (local cron or GitHub Actions)
 - 🛡️ Robust error handling
-- 💰 Cost-effective (< $5/month)
 
 ## 🚀 Quick Start
 
