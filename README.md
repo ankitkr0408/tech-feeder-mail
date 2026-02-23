@@ -9,19 +9,9 @@ Production-grade automated intelligence system that delivers strategic tech insi
 - **Smart Pipeline**: Fetches 50+ items, filters to 15, AI selects top 5 high-leverage items
 - **24-Hour Coverage**: Only analyzes items from last 24 hours with IST timestamps
 - **Bulletproof Reliability**: Auto-retry with structured fallback (never sends "AI failed" messages)
-- **Professional Email**: HTML and plain text formats, under 700 words, mobile-optimized
-- **Product Launches**: Automatically extracts and highlights top 5 SaaS product launches
-<<<<<<< HEAD
+- **Professional Email**: HTML and plain text formats, under 900 words, mobile-optimized
+- **Product Analysis**: Deep business model analysis of SaaS launches (monetization, moats, defensibility)
 - **Cost-Effective**: Approximately ₹3.50/month (~4,200 tokens per email)
-- 🔄 **Bulletproof Reliability**: Auto-retry + structured fallback (never sends "AI failed" messages)
-- 📧 **Professional Email**: HTML + plain text, under 600 words, mobile-optimized
-- � **Cost-Effective**: ~₹2.25/month (~3,000 tokens per email)
-=======
-- **Cost-Effective**: Approximately ₹2.75/month (~3,500 tokens per email)
-- **Bulletproof Reliability**: Auto-retry + structured fallback (never sends "AI failed" messages)
-- **Professional Email**: HTML + plain text, under 600 words, mobile-optimized
-- **Cost-Effective**: ~₹2.25/month (~3,000 tokens per email)
->>>>>>> f2c9a543ddf5e2de1d3b81c80552b7abcacaf2dd
 
 ## Quick Start
 
@@ -243,41 +233,6 @@ daily-tech-radar/
 └── README.md
 ```
 
-## 🔒 Security
-
-- Never commit `.env` file
-- Use App Passwords, not main Gmail password
-- Rotate API keys periodically
-- Keep dependencies updated: `npm audit fix`
-
-## Deployment Options
-
-### 1. GitHub Actions (Recommended)
-- Zero infrastructure required
-- Free tier sufficient for daily runs
-- Automatic execution at scheduled time
-- Built-in logging and monitoring
-
-### 2. Local Machine
-```bash
-npm start
-# Keep terminal running or use PM2 for process management
-```
-
-### 3. Cloud Platforms
-
-**Render:**
-- Deploy as background worker
-- Set environment variables in dashboard
-- Free tier: 750 hours/month
-
-**Railway:**
-```bash
-railway up
-# Configure environment variables in dashboard
-```
-- Free tier: $5 credit/month
-
 ## Security
 
 The workflow is protected with owner-only manual triggers. See [SECURITY.md](SECURITY.md) for complete security documentation including:
@@ -285,6 +240,12 @@ The workflow is protected with owner-only manual triggers. See [SECURITY.md](SEC
 - Secret management best practices
 - Repository visibility options
 - Incident response procedures
+
+Additional security measures:
+- Never commit `.env` file
+- Use App Passwords, not main Gmail password
+- Rotate API keys periodically
+- Keep dependencies updated: `npm audit fix`
 
 ## License
 
