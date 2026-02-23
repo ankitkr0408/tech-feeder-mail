@@ -1,41 +1,51 @@
 import 'dotenv/config';
 import cron from 'node-cron';
 import { fetchAllFeeds } from './fetchFeeds.js';
+import { filterAndRankItems, getLowSignalItems } from './filter.js';
 import { summarizeItems } from './summarize.js';
 import { sendEmail } from './sendEmail.js';
 
 async function runDailyDigest() {
   const startTime = Date.now();
   console.log('\n' + '═'.repeat(60));
-  console.log('🧠 DAILY TECH RADAR - Starting...');
+  console.log('🧠 DAILY TECH RADAR - CTO BRIEF GENERATION');
   console.log('═'.repeat(60) + '\n');
 
   try {
-    // Step 1: Fetch feeds
-    const items = await fetchAllFeeds();
+    // Step 1: Fetch feeds (last 24 hours)
+    const allItems = await fetchAllFeeds();
 
-    if (items.length === 0) {
-      console.log('⚠️  No relevant items found today. Skipping email.');
+    if (allItems.length === 0) {
+      console.log('⚠️  No items found in last 24 hours. Skipping email.');
       return;
     }
 
-    // Step 2: Summarize with AI
-    const { summary, itemCount } = await summarizeItems(items);
+    // Step 2: Filter and rank (top 15 for AI)
+    const { topItems, allScored } = filterAndRankItems(allItems);
 
-    // Step 3: Send email
-    await sendEmail(summary, itemCount);
+    if (topItems.length === 0) {
+      console.log('⚠️  No high-signal items found. Skipping email.');
+      return;
+    }
+
+    // Step 3: Get low-signal items for "Ignore" section
+    const lowSignalItems = getLowSignalItems(allScored, topItems);
+
+    // Step 4: AI summarization (with retry + fallback)
+    const { summary, itemCount, fallback } = await summarizeItems(topItems, lowSignalItems);
+
+    // Step 5: Send CTO brief email
+    await sendEmail(summary, itemCount, fallback);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`\n✨ Daily digest completed in ${duration}s`);
+    console.log(`\n✨ CTO brief completed in ${duration}s`);
+    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → 5 delivered`);
     console.log('═'.repeat(60) + '\n');
 
   } catch (error) {
-    console.error('\n❌ Fatal error in daily digest:');
+    console.error('\n❌ Fatal error in CTO brief generation:');
     console.error(error);
     console.log('═'.repeat(60) + '\n');
-    
-    // Don't crash the process, just log and continue
-    // This ensures cron keeps running for next day
   }
 }
 

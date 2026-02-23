@@ -1,15 +1,16 @@
-# 🧠 Daily Tech Radar
+# 🧠 Daily Tech Radar - CTO Intelligence Brief
 
-Automated daily tech news aggregator that fetches, filters, and summarizes relevant developer/tech content from multiple RSS sources, then emails you a curated digest.
+Production-grade automated intelligence system that delivers strategic tech insights for SaaS founders and product engineers.
 
 ## ✨ Features
 
-- 📡 Fetches from 5+ quality tech sources (Hacker News, Product Hunt, GitHub Trending, Dev.to, TechCrunch)
-- 🎯 Smart filtering with 50+ tech keywords (AI, frameworks, tools, languages, etc.)
-- 🤖 AI-powered summarization using OpenAI GPT-4o-mini
-- 📧 Clean daily email digest
-- ⏰ Automated scheduling (local cron or GitHub Actions)
-- 🛡️ Robust error handling
+- 🎯 **Strategic Filtering**: Relevance scoring (0-10) filters noise, analyzes only top 15 items
+- 🧠 **CTO-Style Analysis**: Opinionated, actionable intelligence (not generic news summaries)
+- 📊 **Smart Pipeline**: Fetches 50+ → Filters to 15 → AI selects top 5 high-leverage items
+- ⏱️ **24-Hour Coverage**: Only analyzes items from last 24 hours with IST timestamps
+- 🔄 **Bulletproof Reliability**: Auto-retry + structured fallback (never sends "AI failed" messages)
+- 📧 **Professional Email**: HTML + plain text, under 600 words, mobile-optimized
+- � **Cost-Effective**: ~₹2.25/month (~3,000 tokens per email)
 
 ## 🚀 Quick Start
 
@@ -105,9 +106,17 @@ TZ=America/New_York                # Your timezone
 RUN_ON_STARTUP=true                # Run immediately on start
 ```
 
-### Customizing Keywords
+### Customizing Filtering
 
-Edit `KEYWORDS` array in `fetchFeeds.js` to adjust filtering.
+Edit relevance scoring in `filter.js`:
+
+```javascript
+const STRATEGIC_KEYWORDS = {
+  highValue: [...],    // +3 score boost
+  mediumValue: [...],  // +2 score boost
+  lowSignal: [...]     // -5 penalty
+}
+```
 
 ### Adding RSS Feeds
 
@@ -121,13 +130,39 @@ Edit `RSS_FEEDS` array in `fetchFeeds.js`:
 }
 ```
 
+### Email Output Format
+
+```
+🎯 CTO BRIEF (2-3 lines)
+[Strategic pattern summary]
+
+🚀 HIGH-LEVERAGE MOVES (Top 5)
+### [Title]
+Source: [Source] | Published: [Date]
+CTO Take: [80 words max]
+Why it matters: [Business insight]
+Action: [Concrete step]
+
+🧠 SAAS OPPORTUNITY SIGNALS
+- [Pattern 1]
+- [Pattern 2]
+
+❌ IGNORE / LOW SIGNAL
+[2-3 items not worth attention]
+```
+
 ## 📊 Cost Estimate
 
-- OpenAI API (gpt-4o-mini): ~$0.10-0.50/day
-- Gmail: Free
-- GitHub Actions: Free (2000 min/month)
+**Per Email:**
+- Tokens: ~3,000 (2,000 input + 1,000 output)
+- Cost: ~$0.0009 (₹0.075)
 
-Total: < $5/month
+**Monthly (30 emails):**
+- Total: ~$0.027 (₹2.25)
+- Gmail: Free
+- GitHub Actions: Free
+
+**Annual: ~₹27 (cheaper than one coffee!)**
 
 ## 🐛 Troubleshooting
 
@@ -155,15 +190,17 @@ Total: < $5/month
 
 ```
 daily-tech-radar/
-├── index.js              # Main entry point & scheduler
-├── fetchFeeds.js         # RSS fetching & filtering
-├── summarize.js          # OpenAI summarization
-├── sendEmail.js          # Email delivery
-├── package.json          # Dependencies
-├── .env.example          # Environment template
-├── .github/
-│   └── workflows/
-│       └── daily-digest.yml  # GitHub Actions workflow
+├── index.js                    # Main orchestrator & scheduler
+├── fetchFeeds.js               # RSS fetching (last 24h only)
+├── filter.js                   # Strategic relevance scoring & ranking
+├── summarize.js                # AI analysis with retry + fallback
+├── sendEmail.js                # Professional email delivery
+├── utils/
+│   └── dateFormatter.js        # IST timestamp utilities
+├── package.json
+├── .env.example
+├── .github/workflows/
+│   └── daily-digest.yml        # GitHub Actions (7:45 PM IST)
 └── README.md
 ```
 

@@ -135,6 +135,13 @@ export async function fetchAllFeeds() {
     }
   }
 
-  console.log(`\n📊 Total unique relevant items: ${uniqueItems.length}`);
-  return uniqueItems;
+  // Filter items from last 24 hours only
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const recentItems = uniqueItems.filter(item => {
+    if (!item.pubDate) return true; // Keep if no date
+    return new Date(item.pubDate) > oneDayAgo;
+  });
+
+  console.log(`\n📊 Total unique relevant items (last 24h): ${recentItems.length}`);
+  return recentItems;
 }
