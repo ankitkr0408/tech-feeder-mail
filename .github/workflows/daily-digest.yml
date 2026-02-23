@@ -2,15 +2,18 @@ name: Daily Tech Radar
 
 on:
   schedule:
-    # Runs at 7:45 PM IST (2:15 PM UTC) daily
-    - cron: '15 14 * * *'
+    # Runs at 11:00 AM IST (5:30 AM UTC) daily
+    - cron: '30 5 * * *'
   
-  # Allow manual trigger
+  # Allow manual trigger (only for repo collaborators)
   workflow_dispatch:
 
 jobs:
   send-digest:
     runs-on: ubuntu-latest
+    
+    # Security: Only run for repo owner
+    if: github.actor == github.repository_owner || github.event_name == 'schedule'
     
     steps:
       - name: Checkout code

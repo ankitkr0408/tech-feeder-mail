@@ -2,6 +2,7 @@ import 'dotenv/config';
 import cron from 'node-cron';
 import { fetchAllFeeds } from './fetchFeeds.js';
 import { filterAndRankItems, getLowSignalItems } from './filter.js';
+import { extractSaaSProducts } from './extractProducts.js';
 import { summarizeItems } from './summarize.js';
 import { sendEmail } from './sendEmail.js';
 
@@ -28,18 +29,21 @@ async function runDailyDigest() {
       return;
     }
 
-    // Step 3: Get low-signal items for "Ignore" section
+    // Step 3: Extract SaaS product launches (top 5)
+    const products = extractSaaSProducts(allItems);
+
+    // Step 4: Get low-signal items for "Ignore" section
     const lowSignalItems = getLowSignalItems(allScored, topItems);
 
-    // Step 4: AI summarization (with retry + fallback)
-    const { summary, itemCount, fallback } = await summarizeItems(topItems, lowSignalItems);
+    // Step 5: AI summarization (with retry + fallback)
+    const { summary, itemCount, fallback } = await summarizeItems(topItems, lowSignalItems, products);
 
-    // Step 5: Send CTO brief email
+    // Step 6: Send CTO brief email
     await sendEmail(summary, itemCount, fallback);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log(`\n✨ CTO brief completed in ${duration}s`);
-    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → 5 delivered`);
+    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → 5 news + ${products.length} products delivered`);
     console.log('═'.repeat(60) + '\n');
 
   } catch (error) {
@@ -75,7 +79,7 @@ async function main() {
   }
 
   // Production mode: run on schedule
-  const schedule = process.env.CRON_SCHEDULE || '45 19 * * *'; // Default: 7:45 PM IST daily
+  const schedule = process.env.CRON_SCHEDULE || '0 11 * * *'; // Default: 11:00 AM IST daily
   
   console.log('🚀 Daily Tech Radar is running!');
   console.log(`⏰ Schedule: ${schedule}`);
