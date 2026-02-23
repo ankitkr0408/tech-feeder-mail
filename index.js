@@ -29,21 +29,24 @@ async function runDailyDigest() {
       return;
     }
 
-    // Step 3: Extract SaaS product launches (top 5)
-    const products = extractSaaSProducts(allItems);
+    // Step 3: Extract and categorize SaaS product launches
+    const productCategories = extractSaaSProducts(allItems);
+    const totalProducts = (productCategories.funded?.length || 0) + 
+                         (productCategories.devtools?.length || 0) + 
+                         (productCategories.aiInfra?.length || 0);
 
     // Step 4: Get low-signal items for "Ignore" section
     const lowSignalItems = getLowSignalItems(allScored, topItems);
 
     // Step 5: AI summarization (with retry + fallback)
-    const { summary, itemCount, fallback } = await summarizeItems(topItems, lowSignalItems, products);
+    const { summary, itemCount, fallback } = await summarizeItems(topItems, lowSignalItems, productCategories);
 
     // Step 6: Send CTO brief email
     await sendEmail(summary, itemCount, fallback);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     console.log(`\n✨ CTO brief completed in ${duration}s`);
-    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → 5 news + ${products.length} products delivered`);
+    console.log(`📊 Pipeline: ${allItems.length} fetched → ${topItems.length} analyzed → 5 news + ${totalProducts} products delivered`);
     console.log('═'.repeat(60) + '\n');
 
   } catch (error) {

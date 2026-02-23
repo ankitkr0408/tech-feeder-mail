@@ -11,7 +11,7 @@ Production-grade automated intelligence system that delivers strategic tech insi
 - **Bulletproof Reliability**: Auto-retry with structured fallback (never sends "AI failed" messages)
 - **Professional Email**: HTML and plain text formats, under 700 words, mobile-optimized
 - **Product Launches**: Automatically extracts and highlights top 5 SaaS product launches
-- **Cost-Effective**: Approximately ₹2.75/month (~3,500 tokens per email)
+- **Cost-Effective**: Approximately ₹3.50/month (~4,200 tokens per email)
 - 🔄 **Bulletproof Reliability**: Auto-retry + structured fallback (never sends "AI failed" messages)
 - 📧 **Professional Email**: HTML + plain text, under 600 words, mobile-optimized
 - � **Cost-Effective**: ~₹2.25/month (~3,000 tokens per email)
@@ -148,30 +148,50 @@ CTO Take: [Strategic explanation, max 80 words]
 Why it matters: [Business insight]
 Action: [Concrete actionable step]
 
-NEW SAAS PRODUCT LAUNCHES (Top 5 products)
-[Product Name]
-Source: [Source]
-[One-line description]
-Link: [URL]
+FUNDED / YC SAAS TO WATCH (1-2 max)
+[Title]
+Problem: [What problem are they solving?]
+Target Customer: [Who pays?]
+Monetization Model: [Subscription/Usage/Freemium/Hybrid]
+Moat Analysis: [Is it defensible?]
+Founder Insight: [What can we learn?]
 
-SAAS OPPORTUNITY SIGNALS
-- [Pattern 1]
-- [Pattern 2]
-- [Pattern 3]
+BOOTSTRAPPED / DEVTOOL SAAS SIGNAL (1-2 max)
+[Title]
+Why developers care: [Technical value]
+How it makes money: [Revenue model]
+Copyable: [Yes/No with reasoning]
+Risk level: [Low/Medium/High with explanation]
+
+AI / INFRA LEVERAGE MOVE (1 max)
+[Title]
+Strategic impact: [How it improves SaaS building]
+Integration: [How to use it]
+Cost/Retention benefit: [Specific advantage]
+
+COPYABLE SAAS IDEA OF THE DAY
+Problem: [Clear problem statement]
+Target customer: [Specific segment]
+Monetization model: [How it makes money]
+Why now: [Market timing]
+Risk level: [Assessment with reasoning]
+
+OPTIMIZATION REMINDER
+[One actionable SaaS optimization tip]
 ```
 
 ## Cost Estimate
 
 **Per Email:**
-- Tokens: ~3,500 (2,200 input + 1,300 output)
-- Cost: ~$0.0011 (₹0.09)
+- Tokens: ~4,200 (2,600 input + 1,600 output)
+- Cost: ~$0.0014 (₹0.12)
 
 **Monthly (30 emails):**
-- OpenAI API: ~$0.033 (₹2.75)
+- OpenAI API: ~$0.042 (₹3.50)
 - Gmail: Free
 - GitHub Actions: Free (2000 minutes/month)
 
-**Annual: ~₹33**
+**Annual: ~₹42**
 
 ## Troubleshooting
 

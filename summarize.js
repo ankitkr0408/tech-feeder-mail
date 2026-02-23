@@ -5,7 +5,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-async function callOpenAI(items, products = [], retryCount = 0) {
+async function callOpenAI(items, productCategories = {}, retryCount = 0) {
   const itemsList = items.map((item, idx) => 
     `${idx + 1}. [${item.source}] ${item.title}
    Published: ${formatPublishDate(item.pubDate)}
@@ -15,38 +15,59 @@ async function callOpenAI(items, products = [], retryCount = 0) {
   ).join('\n\n');
 
   let productsSection = '';
-  if (products && products.length > 0) {
-    productsSection = `\n\nNEW SAAS PRODUCT LAUNCHES (${products.length} items):\n\n` + 
-      products.map((product, idx) => 
-        `${idx + 1}. ${product.title}
-   Source: ${product.source}
-   Link: ${product.link}
-   Context: ${product.description.substring(0, 150)}...`
+  
+  if (productCategories.funded && productCategories.funded.length > 0) {
+    productsSection += `\n\nFUNDED/YC SAAS (${productCategories.funded.length} items):\n\n` + 
+      productCategories.funded.map((p, idx) => 
+        `${idx + 1}. ${p.title}
+   Source: ${p.source}
+   Link: ${p.link}
+   Context: ${p.description.substring(0, 200)}...`
+      ).join('\n\n');
+  }
+  
+  if (productCategories.devtools && productCategories.devtools.length > 0) {
+    productsSection += `\n\nBOOTSTRAPPED/DEVTOOL SAAS (${productCategories.devtools.length} items):\n\n` + 
+      productCategories.devtools.map((p, idx) => 
+        `${idx + 1}. ${p.title}
+   Source: ${p.source}
+   Link: ${p.link}
+   Context: ${p.description.substring(0, 200)}...`
+      ).join('\n\n');
+  }
+  
+  if (productCategories.aiInfra && productCategories.aiInfra.length > 0) {
+    productsSection += `\n\nAI/INFRA TOOLS (${productCategories.aiInfra.length} items):\n\n` + 
+      productCategories.aiInfra.map((p, idx) => 
+        `${idx + 1}. ${p.title}
+   Source: ${p.source}
+   Link: ${p.link}
+   Context: ${p.description.substring(0, 200)}...`
       ).join('\n\n');
   }
 
-  const systemPrompt = `You are a pragmatic CTO briefing a product engineer building SaaS/web applications.
+  const systemPrompt = `You are a pragmatic CTO and product strategist analyzing SaaS opportunities.
+
+Your expertise:
+- Business model analysis (monetization, moats, defensibility)
+- Founder insights and strategic patterns
+- Technical leverage and cost optimization
+- Market timing and competitive analysis
 
 Your style:
-- Concise and strategic
-- Focus on business leverage, not hype
-- Practical actions over theory
-- Sharp, opinionated takes
-
-Your audience:
-- SaaS founders
-- Product engineers
-- Web/app builders
-- Technical decision-makers
+- Sharp, analytical, opinionated
+- Focus on "why now" and "is it defensible"
+- Practical monetization insights
+- Risk assessment
 
 Output requirements:
-- Select EXACTLY 5 items from tech news (highest strategic value)
-- Include ALL product launches in a separate section
-- Total response: under 700 words
-- No fluff, no rewrites of headlines
-- Focus on: why it matters + what to do`;
+- Select EXACTLY 5 items from tech news
+- Analyze ALL product launches with business lens
+- Include one copyable SaaS idea derived from patterns
+- Total response: under 900 words
+- Be brutally honest about defensibility`;
 
-  const userPrompt = `Analyze these ${items.length} pre-filtered tech items and ${products.length} product launches to create a CTO intelligence brief.
+  const userPrompt = `Analyze these ${items.length} tech items and product launches to create a strategic CTO brief.
 
 TECH NEWS:
 ${itemsList}${productsSection}
@@ -54,40 +75,66 @@ ${itemsList}${productsSection}
 Required output structure:
 
 🎯 CTO BRIEF (2-3 lines)
-[Summarize the main pattern/trend from today's tech movement]
+[Main pattern/trend from today]
 
-🚀 HIGH-LEVERAGE MOVES (Top 5 Only from tech news)
-
-For each of the 5 items:
+🚀 HIGH-LEVERAGE MOVES (Top 5 from tech news)
+For each:
 ### [Title]
-Source: [Source Name]
-Published: [Date]
-
-CTO Take:
-[Strategic explanation in max 80 words - why this matters for SaaS builders]
-
-Why it matters:
-[One business/product insight]
-
-Action:
-[One concrete actionable step]
+Source: [Source] | Published: [Date]
+CTO Take: [Strategic explanation, max 80 words]
+Why it matters: [Business insight]
+Action: [Concrete step]
 
 ---
 
-🎁 NEW SAAS PRODUCT LAUNCHES
+🔥 FUNDED / YC SAAS TO WATCH (1-2 max)
+For each:
+### [Title]
+Source: [Source] | Published: [Date]
 
-For each product launch:
-### [Product Name]
+Problem: [What problem are they solving?]
+Target Customer: [Who pays?]
+Monetization Model: [Subscription/Usage/Freemium/Hybrid]
+Moat Analysis: [Is it defensible? Why/why not?]
+Founder Insight: [What can we learn from their approach?]
+
+---
+
+🧠 BOOTSTRAPPED / DEVTOOL SAAS SIGNAL (1-2 max)
+For each:
+### [Title]
 Source: [Source]
-[One-line description of what it does and why it's interesting for SaaS builders]
-Link: [URL]
+
+Why developers care: [Technical value prop]
+How it makes money: [Revenue model]
+Copyable: [Yes/No - explain why]
+Risk level: [Low/Medium/High - explain]
 
 ---
 
-🧠 SAAS OPPORTUNITY SIGNALS
-[2-3 bullet points about patterns, cost signals, tooling gaps, or opportunities]
+💡 AI / INFRA LEVERAGE MOVE (1 max if available)
+### [Title]
+Strategic impact: [How it improves SaaS building]
+Integration: [How to use it]
+Cost/Retention benefit: [Specific advantage]
 
-Keep total under 700 words. Be sharp and practical.`;
+---
+
+🎁 COPYABLE SAAS IDEA OF THE DAY
+[Derived from patterns across all news]
+
+Problem: [Clear problem statement]
+Target customer: [Specific segment]
+Monetization model: [How it makes money]
+Why now: [Market timing]
+Risk level: [Assessment with reasoning]
+
+---
+
+📊 OPTIMIZATION REMINDER
+[One actionable SaaS optimization tip - event tracking, retention, pricing, infra cost, or onboarding]
+
+Keep total under 900 words. Be analytical and honest about defensibility.`;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -97,7 +144,7 @@ Keep total under 700 words. Be sharp and practical.`;
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.7,
-      max_tokens: 1800
+      max_tokens: 2200
     });
 
     const summary = completion.choices[0].message.content;
@@ -122,7 +169,7 @@ Keep total under 700 words. Be sharp and practical.`;
   }
 }
 
-export async function summarizeItems(items, lowSignalItems = [], products = []) {
+export async function summarizeItems(items, lowSignalItems = [], productCategories = {}) {
   if (!items || items.length === 0) {
     console.log('⚠️  No items to summarize');
     return {
@@ -135,7 +182,7 @@ export async function summarizeItems(items, lowSignalItems = [], products = []) 
   console.log(`🤖 Analyzing ${items.length} high-signal items with OpenAI...`);
 
   try {
-    const { summary, usage } = await callOpenAI(items, products);
+    const { summary, usage } = await callOpenAI(items, productCategories);
     
     console.log('✅ CTO brief generated successfully');
 
@@ -143,7 +190,7 @@ export async function summarizeItems(items, lowSignalItems = [], products = []) 
       summary,
       rawItems: items,
       lowSignalItems,
-      products,
+      productCategories,
       itemCount: items.length,
       tokenUsage: usage,
       success: true
@@ -153,13 +200,12 @@ export async function summarizeItems(items, lowSignalItems = [], products = []) 
     console.error('❌ OpenAI failed after retry:', error.message);
     console.log('📋 Generating structured fallback...');
     
-    // Structured fallback - top 10 items, clean format
     const top10 = items.slice(0, 10);
     
-    let fallbackSummary = `🎯 CTO BRIEF
+    let fallbackSummary = `CTO BRIEF
 AI analysis temporarily unavailable. Here are today's top 10 high-signal items, ranked by strategic relevance.
 
-🚀 TOP STRATEGIC ITEMS
+TOP STRATEGIC ITEMS
 
 ${top10.map((item, idx) => 
   `${idx + 1}. ${item.title}
@@ -168,25 +214,35 @@ ${top10.map((item, idx) =>
    ${item.link}
 `).join('\n')}`;
 
-    // Add products section if available
-    if (products && products.length > 0) {
-      fallbackSummary += `\n\n🎁 NEW SAAS PRODUCT LAUNCHES
+    // Add categorized products
+    if (productCategories.funded && productCategories.funded.length > 0) {
+      fallbackSummary += `\n\nFUNDED/YC SAAS
 
-${products.map((product, idx) => 
-  `${idx + 1}. ${product.title}
-   Source: ${product.source}
-   ${product.link}
+${productCategories.funded.map((p, idx) => 
+  `${idx + 1}. ${p.title}
+   Source: ${p.source}
+   ${p.link}
+`).join('\n')}`;
+    }
+    
+    if (productCategories.devtools && productCategories.devtools.length > 0) {
+      fallbackSummary += `\n\nDEVTOOL SAAS
+
+${productCategories.devtools.map((p, idx) => 
+  `${idx + 1}. ${p.title}
+   Source: ${p.source}
+   ${p.link}
 `).join('\n')}`;
     }
 
-    fallbackSummary += `\n\n📊 Coverage: ${top10.length} items analyzed from last 24 hours
-🔍 Relevance scores: ${top10[0]?.relevanceScore}/10 to ${top10[top10.length - 1]?.relevanceScore}/10`;
+    fallbackSummary += `\n\nCoverage: ${top10.length} items analyzed from last 24 hours
+Relevance scores: ${top10[0]?.relevanceScore}/10 to ${top10[top10.length - 1]?.relevanceScore}/10`;
 
     return {
       summary: fallbackSummary,
       rawItems: top10,
       lowSignalItems,
-      products,
+      productCategories,
       itemCount: top10.length,
       fallback: true
     };
